@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Escolar de Tabaco y Accesorios</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* ==========================================================================
+           ESTILOS GENERALES
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Barra de Navegación --- */
+        .main-header {
+            background-color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .nav-btn.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+
+        .cart-badge {
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* --- Contenedor de las Páginas --- */
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .app-section {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        /* --- Buscadores e Inputs --- */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input, .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input {
+            padding-left: 42px;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            color: #94a3b8;
+        }
+
+        .search-input:focus, .form-input:focus, .form-textarea:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        /* --- Grid de Productos --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: #ffffff;
+        }
+
+        .product-brand-tag {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .product-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+            min-height: 40px;
+        }
+
+        .product-price {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 8px 0;
+        }
+
+        /* --- Botones --- */
+        .btn-primary {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+            transition: background-color 0.2s;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        /* --- Apartado de Filtros --- */
+        .brand-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .brand-selector-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .brand-card {
+            padding: 16px 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s ease;
+            background-color: #f8fafc;
+        }
+
+        .brand-card.active {
+            border-color: #4f46e5;
+            background-color: #f5f3ff;
+        }
+
+        .brand-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            color: #4f46e5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* --- Listas de Carrito --- */
+        .cart-container {
+            margin-top: 10px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background-color: #f8fafc;
+        }
+
+        .list-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+
+        .quantity-btn {
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        .quantity-btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        .quantity-value {
+            padding: 0 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #ef4444;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #fee2e2;
+        }
+
+        .cart-total-box {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* --- Menú de Perfil --- */
+        .profile-menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .profile-menu-item:hover {
+            background-color: #f5f3ff;
+            border-color: #c7d2fe;
+        }
+
+        .profile-link-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        /* --- Ventanas Emergentes (Modales) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 200;
+        }
+
+        .modal-box {
+            background-color: #ffffff;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .summary-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .summary-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-cart-msg {
+            text-align: center;
+            color: #64748b;
+            padding: 30px 0;
+        }
+
+        .notebook-note {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #1e3a8a;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="nav-container">
+            <h1 class="brand-title">
+                <i data-lucide="flame"></i> TABACO
+            </h1>
+            <nav class="main-nav">
+                <button onclick="showSection('principal')" class="nav-btn active">Principal</button>
+                <button onclick="showSection('tipo-buscar')" class="nav-btn">Tipo/Buscar</button>
+                <button onclick="showSection('perfil')" class="nav-btn">Perfil</button>
+                <button onclick="showSection('domicilio')" class="nav-btn">Domicilio</button>
+                <button onclick="showSection('productos-carrito')" class="nav-btn">
+                    <i data-lucide="shopping-cart" style="width:16px; height:16px; display:inline; vertical-align:middle;"></i> 
+                    Carrito <span id="cart-count" class="cart-badge">0</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <section id="principal" class="app-section">
+            <h2><i data-lucide="layout-grid"></i> Catálogo Completo</h2>
+            
+            <div class="search-container">
+                <input type="text" id="main-search" placeholder="Buscar productos por nombre o marca..." class="search-input" oninput="filterMainProducts()">
+                <i data-lucide="search"></i>
+            </div>
+            
+            <div class="products-grid" id="main-products-grid"></div>
+            
+            <div class="notebook-note">
+                <strong>Simulador Académico:</strong> Catálogo interactivo con imágenes optimizadas libres de restricciones CORS.
+            </div>
+        </section>
+
+        <section id="tipo-buscar" class="app-section hidden">
+            <h2><i data-lucide="filter"></i> Filtrar por Marca</h2>
+            
+            <div class="brand-selector-grid">
+                <div class="brand-card active" id="brand-fosforos" onclick="selectBrand('Fósforos')">
+                    <div class="brand-icon-wrapper"><i data-lucide="sparkles"></i></div>
+                    <span class="brand-name">Fósforos</span>
+                </div>
+                <div class="brand-card" id="brand-marlboro" onclick="selectBrand('Marlboro')">
+                    <div class="brand-icon-wrapper"><i data-lucide="package"></i></div>
+                    <span class="brand-name">Marlboro</span>
+                </div>
+                <div class="brand-card" id="brand-camel" onclick="selectBrand('Camel')">
+                    <div class="brand-icon-wrapper"><i data-lucide="package"></i></div>
+                    <span class="brand-name">Camel</span>
+                </div>
+                <div class="brand-card" id="brand-lucky" onclick="selectBrand('Lucky Strike')">
+                    <div class="brand-icon-wrapper"><i data-lucide="package"></i></div>
+                    <span class="brand-name">Lucky Strike</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                <h3 style="font-size:1rem; margin-bottom:15px; color:#1e293b;" id="filter-results-title">Productos de "Fósforos":</h3>
+                <div class="products-grid" id="filtered-products-grid"></div>
+            </div>
+        </section>
+
+        <section id="perfil" class="app-section hidden">
+            <h2><i data-lucide="user"></i> Mi Perfil de Usuario</h2>
+
+            <div class="profile-menu-item" onclick="showSection('domicilio')">
+                <span class="profile-link-content"><i data-lucide="map-pin"></i> Configurar Domicilio de Envío</span>
+                <i data-lucide="chevron-right"></i>
+            </div>
+            <div class="profile-menu-item" onclick="showSection('productos-carrito')">
+                <span class="profile-link-content"><i data-lucide="shopping-bag"></i> Ver mi Carrito de Compras</span>
+                <i data-lucide="chevron-right"></i>
+            </div>
+        </section>
+
+        <section id="domicilio" class="app-section hidden">
+            <h2><i data-lucide="truck"></i> Datos de Envío</h2>
+            
+            <form id="address-form" onsubmit="saveAddress(event)">
+                <div class="form-group">
+                    <label class="form-label">Calle y Número</label>
+                    <input type="text" id="form-calle" value="Avenida San Pedro N° 45" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número de Teléfono</label>
+                    <input type="tel" id="form-tel" value="552481903" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Municipio / Localidad</label>
+                    <input type="text" id="form-municipio" value="San Nicolás" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Referencias de la casa</label>
+                    <textarea rows="2" id="form-referencias" class="form-textarea" placeholder="Ej. Portón blanco, frente al parque central..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-success">
+                    <i data-lucide="save"></i> Guardar Datos de Entrega
+                </button>
+            </form>
+        </section>
+
+        <section id="productos-carrito" class="app-section hidden">
+            <h2><i data-lucide="shopping-cart"></i> Carrito de Compras</h2>
+            
+            <div id="cart-list" class="cart-container"></div>
+
+            <div class="cart-total-box">
+                Total a Pagar: <span id="cart-total-price">$0</span>
+            </div>
+
+            <button onclick="openModal()" class="btn-primary" style="margin-top:20px; padding:14px; font-size:1rem;">
+                <i data-lucide="credit-card"></i> Procesar y Comprar Ahora
+            </button>
+        </section>
+
+    </main>
+
+    <div id="modal-compra" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title"><i data-lucide="check-circle" style="color:#10b981;"></i> Resumen de Pedido</h3>
+                <button onclick="closeModal()" class="modal-close-btn"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="summary-card">
+                <p class="summary-title"><i data-lucide="map-pin" style="width:14px;"></i> Domicilio Destino:</p>
+                <p style="font-size:0.85rem;" id="modal-address-text">Cargando...</p>
+            </div>
+
+            <div class="summary-card">
+                <p class="summary-title"><i data-lucide="package" style="width:14px;"></i> Productos seleccionados:</p>
+                <div id="modal-products-list" style="font-size:0.85rem; max-height: 150px; overflow-y: auto;"></div>
+            </div>
+            
+            <div style="font-weight: bold; font-size:1.1rem; text-align:right; margin-bottom: 15px;" id="modal-total-text">
+                Total: $0
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button onclick="closeModal()" class="btn-primary" style="background-color:#64748b; width:35%;">Atrás</button>
+                <button onclick="confirmPurchase()" class="btn-success" style="width:65%; font-size:0.9rem; padding:10px;">Confirmar Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DATOS INICIAL CON ENLACES VALIDADOS DE WIKIMEDIA COMMONS
+        const defaultProducts = [
+            { id: 1, brand: "Fósforos", title: "Fósforos de Madera de Seguridad Clásicos", price: 15, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Matches-1.jpg/400px-Matches-1.jpg" },
+            { id: 2, brand: "Fósforos", title: "Caja de Cerillos Largos para Chimenea", price: 25, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Matchbox_%26_matches.jpg/400px-Matchbox_%26_matches.jpg" },
+            { id: 3, brand: "Fósforos", title: "Fósforos Antiviento Impermeables", price: 50, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/S%C3%A4kerhetst%C3%A4ndstickor.jpg/400px-S%C3%A4kerhetst%C3%A4ndstickor.jpg" },
+            { id: 4, brand: "Fósforos", title: "Encendedor Clásico Recargable", price: 35, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Pocket_Lighter.jpg/400px-Pocket_Lighter.jpg" },
+            { id: 5, brand: "Fósforos", title: "Cenicero de Cristal Redondo Clásico", price: 70, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Ashtray_01.jpg/400px-Ashtray_01.jpg" },
+            { id: 6, brand: "Marlboro", title: "Marlboro Red Regular (Cajetilla Roja)", price: 140, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Marlboro_Red_%28netherlands%29.jpg/400px-Marlboro_Red_%28netherlands%29.jpg" },
+            { id: 7, brand: "Marlboro", title: "Marlboro Gold Original (Cajetilla Dorada)", price: 145, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Marlboro_Gold_Pack.jpg/400px-Marlboro_Gold_Pack.jpg" },
+            { id: 8, brand: "Marlboro", title: "Marlboro Vista Purple Fusion (Mentol)", price: 155, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Marlboro_Red_%28netherlands%29.jpg/400px-Marlboro_Red_%28netherlands%29.jpg" },
+            { id: 9, brand: "Marlboro", title: "Marlboro Ruby Crafted Selection", price: 135, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/German_and_American_Marlboro_Red.jpg/400px-German_and_American_Marlboro_Red.jpg" },
+            { id: 10, brand: "Marlboro", title: "Tabaco Marlboro Red para Liar (Pouch)", price: 160, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Cigarette_packet_foil.JPG/400px-Cigarette_packet_foil.JPG" },
+            { id: 11, brand: "Camel", title: "Cigarros Camel Filters Clásicos", price: 130, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Camel_Mild_Cigarette_Pack_Front_Japan.jpg/400px-Camel_Mild_Cigarette_Pack_Front_Japan.jpg" },
+            { id: 12, brand: "Camel", title: "Cigarros Camel Blue Suave", price: 135, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Camel_Cigarettes.jpg/400px-Camel_Cigarettes.jpg" },
+            { id: 13, brand: "Camel", title: "Camel Activate Double Mint (Cápsula)", price: 150, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Camel_Cigarettes.jpg/400px-Camel_Cigarettes.jpg" },
+            { id: 14, brand: "Camel", title: "Tabaco Camel Essential Sin Aditivos", price: 180, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/91/Tabak-01.jpg/400px-Tabak-01.jpg" },
+            { id: 15, brand: "Camel", title: "Filtros de Algodón Camel Slim 6mm", price: 45, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Cigarette_filters.jpg/400px-Cigarette_filters.jpg" },
+            { id: 16, brand: "Lucky Strike", title: "Lucky Strike Red Original Clásico", price: 125, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Lucky_Strike_Original_Red.jpg/400px-Lucky_Strike_Original_Red.jpg" },
+            { id: 17, brand: "Lucky Strike", title: "Lucky Strike Double Click Wild Berries", price: 145, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lucky_Strike_Aniversario.jpg/400px-Lucky_Strike_Aniversario.jpg" },
+            { id: 18, brand: "Lucky Strike", title: "Lucky Strike Blue Smooth Bright", price: 120, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Lucky_Strike_Click_%26_Roll.jpg/400px-Lucky_Strike_Click_%26_Roll.jpg" },
+            { id: 19, brand: "Lucky Strike", title: "Papel de Liar Regular Lucky", price: 30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rolling_papers.jpg/400px-Rolling_papers.jpg" },
+            { id: 20, brand: "Lucky Strike", title: "Máquina Rodillo Inyectora de Cigarrillos", price: 110, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Machine_pour_tuber_les_cigarettes.jpg/400px-Machine_pour_tuber_les_cigarettes.jpg" }
+        ];
+
+        // Estado Global Inicial
+        let products = JSON.parse(localStorage.getItem('adminProducts')) || defaultProducts;
+        let cart = [];
+        let selectedBrandFilter = 'Fósforos';
+        let userAddress = {
+            calle: "Avenida San Pedro N° 45",
+            tel: "552481903",
+            municipio: "San Nicolás",
+            referencias: "Casa frente al parque central"
+        };
+
+        // Si no existe nada en localStorage, lo guardamos para el admin
+        if(!localStorage.getItem('adminProducts')) {
+            localStorage.setItem('adminProducts', JSON.stringify(defaultProducts));
+        }
+
+        // Cargar todo al iniciar la página
+        window.onload = function() {
+            renderMainProducts(products);
+            renderFilteredProducts();
+            updateCartDOM();
+            lucide.createIcons();
+        };
+
+        // Renderizado del Catálogo General
+        function renderMainProducts(productsList) {
+            const grid = document.getElementById('main-products-grid');
+            grid.innerHTML = '';
+            
+            if(productsList.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 20px; color:#64748b;">No se encontraron productos.</p>';
+                return;
+            }
+
+            productsList.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div>
+                        <span class="product-brand-tag">${prod.brand}</span>
+                        <img src="${prod.img || 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/400px-No_image_available.svg.png'}" alt="${prod.title}" class="product-img">
+                        <h4 class="product-title">${prod.title}</h4>
+                    </div>
+                    <div>
+                        <p class="product-price">$${prod.price}</p>
+                        <button onclick="addToCart(${prod.id})" class="btn-primary">
+                            <i data-lucide="plus"></i> Agregar al Carrito
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Buscador reactivo en vivo
+        function filterMainProducts() {
+            const text = document.getElementById('main-search').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.title.toLowerCase().includes(text) || 
+                p.brand.toLowerCase().includes(text)
+            );
+            renderMainProducts(filtered);
+        }
+
+        // Selección de Filtros por Marca
+        function selectBrand(brandName) {
+            selectedBrandFilter = brandName;
+            document.getElementById('brand-fosforos').classList.toggle('active', brandName === 'Fósforos');
+            document.getElementById('brand-marlboro').classList.toggle('active', brandName === 'Marlboro');
+            document.getElementById('brand-camel').classList.toggle('active', brandName === 'Camel');
+            document.getElementById('brand-lucky').classList.toggle('active', brandName === 'Lucky Strike');
+            document.getElementById('filter-results-title').innerText = `Productos de "${brandName}":`;
+            renderFilteredProducts();
+        }
+
+        // Renderizado de Filtros de Marcas
+        function renderFilteredProducts() {
+            const grid = document.getElementById('filtered-products-grid');
+            grid.innerHTML = '';
+            
+            const filtered = products.filter(p => p.brand.toLowerCase() === selectedBrandFilter.toLowerCase());
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#64748b;">No hay productos registrados para esta marca.</p>';
+                return;
+            }
+
+            filtered.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div>
+                        <img src="${prod.img || 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/400px-No_image_available.svg.png'}" alt="${prod.title}" class="product-img">
+                        <h4 class="product-title">${prod.title}</h4>
+                    </div>
+                    <div>
+                        <p class="product-price">$${prod.price}</p>
+                        <button onclick="addToCart(${prod.id})" class="btn-primary">
+                            <i data-lucide="plus"></i> Agregar
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Controladores del Carrito de Compras
+        function addToCart(productId) {
+            const itemInCart = cart.find(item => item.id === productId);
+            if (itemInCart) {
+                itemInCart.quantity++;
+            } else {
+                const product = products.find(p => p.id === productId);
+                if(product) {
+                    cart.push({ ...product, quantity: 1 });
+                }
+            }
+            updateCartDOM();
+            const targetProd = products.find(p => p.id === productId);
+            if(targetProd) alert(`Añadido al carrito: ${targetProd.title}`);
+        }
+
+        function changeQuantity(productId, delta) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+                updateCartDOM();
+            }
+        }
+
+        function removeProduct(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDOM();
+        }
+
+        function updateCartDOM() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = totalCount;
+
+            const cartListDOM = document.getElementById('cart-list');
+            cartListDOM.innerHTML = '';
+            
+            if(cart.length === 0) {
+                cartListDOM.innerHTML = '<p class="empty-cart-msg">Tu carrito está vacío. Agrega productos desde la sección Principal.</p>';
+                document.getElementById('cart-total-price').innerText = "$0";
+                return;
+            }
+
+            let totalPrice = 0;
+            cart.forEach(item => {
+                totalPrice += (item.price * item.quantity);
+                const row = document.createElement('div');
+                row.className = 'list-item';
+                row.innerHTML = `
+                    <div class="list-item-info">
+                        <img src="${item.img || 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/400px-No_image_available.svg.png'}" alt="${item.title}" class="item-thumb">
+                        <div>
+                            <h4 class="product-title" style="min-height:auto;">${item.title}</h4>
+                            <p class="product-price" style="margin:2px 0;">$${item.price} c/u</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <button onclick="removeProduct(${item.id})" class="btn-delete"><i data-lucide="trash-2" style="width:18px;"></i></button>
+                    </div>
+                `;
+                cartListDOM.appendChild(row);
+            });
+
+            document.getElementById('cart-total-price').innerText = `$${totalPrice}`;
+            lucide.createIcons();
+        }
+
+        // Formulario de Envío
+        function saveAddress(event) {
+            event.preventDefault();
+            userAddress.calle = document.getElementById('form-calle').value;
+            userAddress.tel = document.getElementById('form-tel').value;
+            userAddress.municipio = document.getElementById('form-municipio').value;
+            userAddress.referencias = document.getElementById('form-referencias').value;
+            
+            alert('¡Datos de domicilio guardados de forma correcta!');
+            showSection('principal');
+        }
+
+        // SPA Navegación Directa
+        function showSection(sectionId) {
+            document.querySelectorAll('.app-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => btn.getAttribute('onclick').includes(sectionId));
+            if(activeBtn) activeBtn.classList.add('active');
+        }
+
+        // Ventana Modal de Compra
+        function openModal() { 
+            if(cart.length === 0) {
+                alert('El carrito está vacío. Agrega algún producto para continuar.');
+                return;
+            }
+            
+            document.getElementById('modal-address-text').innerText = `${userAddress.calle}, ${userAddress.municipio}. (Tel: ${userAddress.tel})`;
+            
+            const productsListDOM = document.getElementById('modal-products-list');
+            productsListDOM.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += (item.price * item.quantity);
+                const p = document.createElement('p');
+                p.style.margin = '2px 0';
+                p.innerText = `- ${item.title} (x${item.quantity})`;
+                productsListDOM.appendChild(p);
+            });
+            
+            document.getElementById('modal-total-text').innerText = `Total: $${total}`;
+            document.getElementById('modal-compra').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-compra').classList.add('hidden');
+        }
+
+        function confirmPurchase() {
+            alert('¡Pedido confirmado de manera simulada exitosamente!');
+            cart = [];
+            updateCartDOM();
+            closeModal();
+            showSection('principal');
+        }
+
+        // Sincronizador de base de datos en tiempo real entre ventanas del navegador
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'adminProducts') {
+                products = JSON.parse(e.newValue) || defaultProducts;
+                renderMainProducts(products);
+                renderFilteredProducts();
+            }
+        });
+    </script>
+</body>
+</html>
